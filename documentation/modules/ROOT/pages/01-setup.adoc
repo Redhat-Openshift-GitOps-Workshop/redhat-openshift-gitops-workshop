@@ -2,28 +2,91 @@
 include::_attributes.adoc[]
 
 [#prerequisite]
-== Prerequisite CLI tools
+== Prerequisite
 
-include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/prerequisites-kubernetes.adoc[]
-|===
+During this tutorial, it will be required to work with different tools for running the exercises included. Please install the following software:
 
-include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/optional-requisites.adoc[]
-|===
+include::partial$requirements.adoc[]
 
-[#minikube]
-== Setup Kubernetes
+NOTE: Please review the official documentation to install the latest versions of these tools on your laptop following the optimum procedure 
 
-:profile: my_profile
+It is also required to have a https://github.com[GitHub] account in order to create some repositories during this tutorial.
 
-include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/kubernetes-setup.adoc[]
+[#01-laboratory]
+== Laboratory
 
-And then you are ready for start using Kubernetes:
+The technical exercises included in this tutorial are based on cloud native solutions which are extensively used in the IT market. Please review the following list which includes the basics around these cloud native solutions:
 
-image::kubelogo.png[]
+- https://github.com/[GitHub] is a provider of Internet hosting for software development and version control using Git. It offers the distributed version control and source code management functionality of Git, plus its own features.
+- https://docs.openshift.com/container-platform/[Red Hat Openshift Container Platform Cluster] is an enterprise-ready Kubernetes container platform with full-stack automated operations to manage hybrid cloud, multicloud, and edge deployments. Red Hat OpenShift is optimized to improve developer productivity and promote innovation.
+- https://argoproj.github.io/argo-cd/[ArgoCD] is a declarative, GitOps continuous delivery tool for Kubernetes following the GitOps pattern of using Git repositories as the source of truth for defining the desired application state. Argo CD automates the deployment of the desired application states in the specified target environments. Application deployments can track updates to branches, tags, or pinned to a specific version of manifests at a Git commit.
+- https://helm.sh/[Helm] is a tool to find, share, and use software built for Kubernetes. Helm helps users manage Kubernetes applications in terms of definition, installing, and upgrading even the most complex Kubernetes applications.
 
-[#downloadtutorial]
-== Get tutorial sources
+[#01-accessconsole]
+=== Access - OCP Console
 
-:tutorial-url: https://github.com/redhat-developer-demos/rhd-tutorial-common.git
-:folder: my_folder
-include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/download-sources.adoc[]
+In order to check the laboratory environment, please access the Openshift Console via browser using your credentials:
+
+- _https://console-openshift-console.apps.%CLUSTER%_
+
+.Openshift Console
+image::ocp_console.png[]
+
+NOTE: It is required access with cluster-admin user the first time in order to set up the environment.
+
+[#01-accesscli]
+=== Access - OC Client
+
+The OpenShift Container Platform CLI (which needs to be installed first) exposes the commands for managing your applications as well as the lower-level tools to interact with each component of your system. With the *oc* command, you can create applications and manage OpenShift Container Platform projects from a terminal.
+
+Please check that you have followed the pre-requisites with your instructor and connect to the cluster executing the next command from your terminal:
+
+[.lines_space]
+[.console-input]
+[source,bash, subs="+macros,+attributes"]
+----
+oc login -u {user} -p {user} {cluster_api}
+----
+
+If the login is successful, it should show an output similar to the following screenshot:
+
+.OC CLI Login Output 
+image::oc_cli_login.png["OC CLI Login Output"]
+
+TIP: Please pay special attention to *oc CLI* because you will need to use this tool several times during this tutorial.
+
+[#01-clusterSetup]
+== Cluster Setup
+
+ArgoCD is the unique requirement and you can install it as you wish. However we recommend install by Redhat Openshift Gitops operator, although you can install too by ArgoCD operator. 
+
+In the repository https://github.com/Redhat-Openshift-GitOps-Workshop/ocp-cluster-setup[ocp-cluster-setup] there are a script to perform automatically the complete cluster setup:
+
+---
+git clone git@github.com:Redhat-Openshift-GitOps-Workshop/ocp-cluster-setup.git
+cd ocp-cluster-setup
+sh scripts/setup_lab.sh
+---
+
+[#01-accessArgoCD]
+=== Access - Argo CD dashboard
+ 
+The Argo CD web console will give you access to control how the git repo is synced with Openshift, as well as check the real status of the synchronization. To log in to the web console, access to ArgoCD server host, to get it execute following command:
+
+---
+oc get route -n openshift-gitops openshift-gitops-server -o jsonpath='{.spec.host}'
+---
+
+It is important to bear in mind that Argo CD upon installation generates an initial admin password which is stored in a Kubernetes secret. In order to retrieve this password, run the following command to decrypt the admin password:
+ 
+[.lines_space]
+[.console-input]
+[source,bash, subs="+macros,+attributes"]
+----
+oc extract secret/openshift-gitops-cluster -n openshift-gitops --to=-
+----
+
+Log into Argo CD with `admin` username and the password retrieved from the previous step.
+
+.ArgoCD login screen
+image::argocd_login.png["ArgoCD login screen"]
