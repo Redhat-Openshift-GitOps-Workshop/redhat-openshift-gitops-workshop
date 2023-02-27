@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Deploy Service :: Gitops workshop</title>
+    <link rel="canonical" href="https://github.com/Redhat-Openshift-GitOps-Workshop/redhat-openshift-gitops-workshop/template-tutorial/02-day2_gitops.html">
+    <meta name="generator" content="Antora 3.0.0">
+    <link rel="stylesheet" href="../_/css/site.css">
+<link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img
+          src="../_/img/header_logo.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" href="https://github.com/Redhat-Openshift-GitOps-Workshop/redhat-openshift-gitops-workshop">Gitops workshop</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="#">Books</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">CheatSheets</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">CheatSheet A</a>
+            <a class="navbar-item" href="#">CheatSheet B</a>
+            <a class="navbar-item" href="#">CheatSheet C</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Upcoming Events</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">Event A</a>
+            <a class="navbar-item" href="#">Event B</a>
+            <a class="navbar-item" href="#">Event C</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">Tutorial A</a>
+            <a class="navbar-item" href="#">Tutorial B</a>
+            <a class="navbar-item" href="#">Tutorial C</a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button is-primary" href="#">Download</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="template-tutorial" data-version="master">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html" class=" query-params-link">Template Tutorial</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="01-setup.html">1. Setup</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup.html#prerequisite">Prerequisites</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup.html#minikube">Setup Minikube</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="#02-deploy.adoc">2. Deploy Service</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#02-deploy.adoc#package">Build Service</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#02-deploy.adoc#deploy">Deploy Dervice</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Template Tutorial</span>
+    <span class="version">master</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Template Tutorial</span>
+      <ul class="versions">
+        <li class="version is-current">
+          <a href="index.html">master</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Template Tutorial</a></li>
+    <li><a href="02-day2_gitops.html">Deploy Service</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="https://github.com/Redhat-Openshift-GitOps-Workshop/redhat-openshift-gitops-workshop/edit/master/documentation/modules/ROOT/pages/02-day2_gitops.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Deploy Service</h1>
+<div class="sect1">
+<h2 id="day2"><a class="anchor" href="#day2"></a>Day2 Configuration Gitops</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When a cluster environment is deployed and we started to operate on it, "day 2" operations started and it will continue until the cluster environment was deleted. These operations will be perform by DevOps or operations teams  even both teams concurrently.</p>
+</div>
+<div class="paragraph">
+<p>This scenario fit perfectly with GitOps filosophy. All the changes needed on day 2 operations will be perform by IAC and it will be stored into a Git repository. The status on the repository will defined the desired state on the cluster, so the Git repository will be the truth source.</p>
+</div>
+<div class="paragraph">
+<p>This workshop will help you to understand and learn how GitOps can fit with day2 or infrastructure cluster configurations. While the workshop you will learn the following topics:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Create ArgoCD applications</p>
+</li>
+<li>
+<p>Create managed application repository</p>
+</li>
+<li>
+<p>Perform changes in code and how synchronize with the cluster</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="create_app"><a class="anchor" href="#create_app"></a>Create ArgoCD applications</h3>
+<div class="paragraph">
+<p>When we use a ArgoCD for cluster configurations concern it&#8217;s neccessary assign the correct permissions in order to the ArgoCD controller was allowed to perform all changes defined in Git repositories.</p>
+</div>
+<div class="paragraph">
+<p>Althoug it is recommendable assign specify permissions, in this workshop we assign cluster admin permissions to ArgoCD controller service account. This change it was defined on <a href="https://github.com/Redhat-Openshift-GitOps-Workshop/day2configuration-security">day2configuration-security</a> repository.</p>
+</div>
+<div class="paragraph">
+<p>To apply this security change, we going to create an ArgoCD application which apply the changes and observe any changes in the repository.</p>
+</div>
+<div class="paragraph">
+<p>Firstly access to ArgoCD console and then click on "New App" button. Fill the applications details as it shows in the images:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/day2_security_1.png" alt="ArgoCD New app">
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/day2_security_2.png" alt="ArgoCD New app">
+</div>
+</div>
+<div class="paragraph">
+<p>Once you finish the applications will display in ArgoCD console, click on it to access and you can check the elements identified by ArgoCD and his state.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/day2_security_3.png" alt="Security App state">
+</div>
+</div>
+<div class="paragraph">
+<p>Other important security concern is avoid to use Kubeadmin user, so we going to a create a new application where we defined a new Identity Provider and will be assigned to the default Oauth resource.</p>
+</div>
+<div class="paragraph">
+<p>This time, insted of create the application from ArgoCD console, we create it by code and apply manually. Create a file and Copy the following code fragment on it.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: day2configuration-identity-providers
+spec:
+  destination:
+    name: ''
+    namespace: ''
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: overlays/dev
+    repoURL: &gt;-
+      https://github.com/Redhat-Openshift-GitOps-Workshop/day2configuration-identity-providers
+    targetRevision: main
+  project: default
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When you finish then apply the manifest with the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>oc apply -f &lt;YOUR_IDENTITYPROVIDER_APP_FILENAME&gt; -n openshift-gitops</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now check that the application was created</p>
+</div>
+<div class="imageblock unresolved">
+<div class="content">
+<img src="day_ip_app.png" alt="Identity Provider App">
+</div>
+</div>
+<div class="paragraph">
+<p>You can see the resources we defined in the code and how ArgoCD apply these changes in the cluster. So, now you can logout kubeadmin user and login with the new user "ocpadmin". The password for this user is "ocpadmin"</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The changes apply to Oauth resources take a time to perform, for that reason it&#8217;s possible that you can&#8217;t login with ocpadmin. Please, wait some minutes to try login again.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="managed_application"><a class="anchor" href="#managed_application"></a>Create managed application repository</h3>
+<div class="paragraph">
+<p>Right now you now how create ArgoCD applications but create application manually breaks GitOps approach. In order to fix that issue it&#8217;s neccessary to create a repository where all ArgoCD applications will be defined as code.</p>
+</div>
+<div class="paragraph">
+<p>You can use <a href="https://github.com/Redhat-Openshift-GitOps-Workshop/day2configuration-argocd-applications">this repository</a>, just fork the repository and get url of your just forked repository.</p>
+</div>
+<div class="paragraph">
+<p>The next step will be create a new ArgoCD application which observe the repository that you just fork. You can create this applications as you wish, created by console or create and apply a manifest.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+You need configure the ArgoCD application to use "values-dev" as helm values file.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Although it&#8217;s recommendable create the application by yourself, if you have some troubles to create the application, you can use this manifest:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: day2configuration-argocd-applications
+spec:
+  destination:
+    name: ''
+    namespace: ''
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: .
+    repoURL: &gt;-
+      https://github.com/&lt;YOUR_GITHUB_USER&gt;/day2configuration-argocd-applications
+    targetRevision: main
+    helm:
+      valueFiles:
+        - values-dev.yaml
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once the application is created, access to ArgoCD console and check all the applications that have been created. You can access to one of them and verify if all resources have been identified and created by ArgoCD.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/apps_all.png" alt="All ArgoCD apps">
+</div>
+</div>
+<div class="paragraph">
+<p>From now on you add all your ArgoCD apps in these repository and automatically the ArgoCD controller will managed the applications in the cluster</p>
+</div>
+</div>
+</div>
+</div>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../_/js/vendor/clipboard.js"></script>
+<script src="../_/js/site.js"></script>
+<script async src="../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
