@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: day2configuration-identity-providers
+spec:
+  destination:
+    name: ''
+    namespace: ''
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: overlays/dev
+    repoURL: >-
+      https://github.com/Redhat-Openshift-GitOps-Workshop/day2configuration-identity-providers
+    targetRevision: main
+  project: default
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
