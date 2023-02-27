@@ -1,0 +1,120 @@
+= Deploy Service
+include::_attributes.adoc[]
+
+[#day2]
+== Day2 Configuration Gitops
+
+When a cluster environment is deployed and we started to operate on it, "day 2" operations started and it will continue until the cluster environment was deleted. These operations will be perform by DevOps or operations teams  even both teams concurrently.
+
+This scenario fit perfectly with GitOps filosophy. All the changes needed on day 2 operations will be perform by IAC and it will be stored into a Git repository. The status on the repository will defined the desired state on the cluster, so the Git repository will be the truth source.
+
+
+This workshop will help you to understand and learn how GitOps can fit with day2 or infrastructure cluster configurations. While the workshop you will learn the following topics:
+
+* Create ArgoCD applications
+* Create managed application repository
+* Perform changes in code and how synchronize with the cluster
+
+[#create_app]
+=== Create ArgoCD applications
+
+When we use a ArgoCD for cluster configurations concern it's neccessary assign the correct permissions in order to the ArgoCD controller was allowed to perform all changes defined in Git repositories. 
+
+Althoug it is recommendable assign specify permissions, in this workshop we assign cluster admin permissions to ArgoCD controller service account. This change it was defined on https://github.com/Redhat-Openshift-GitOps-Workshop/day2configuration-security[day2configuration-security] repository.
+
+To apply this security change, we going to create an ArgoCD application which apply the changes and observe any changes in the repository.
+
+Firstly access to ArgoCD console and then click on "New App" button. Fill the applications details as it shows in the images:
+
+image::day2_security_1.png["ArgoCD New app"]
+image::day2_security_2.png["ArgoCD New app"]
+
+Once you finish the applications will display in ArgoCD console, click on it to access and you can check the elements identified by ArgoCD and his state.
+
+image::day2_security_3.png["Security App state"]
+
+Other important security concern is avoid to use Kubeadmin user, so we going to a create a new application where we defined a new Identity Provider and will be assigned to the default Oauth resource.
+
+This time, insted of create the application from ArgoCD console, we create it by code and apply manually. Create a file and Copy the following code fragment on it.
+
+----
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: day2configuration-identity-providers
+spec:
+  destination:
+    name: ''
+    namespace: ''
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: overlays/dev
+    repoURL: >-
+      https://github.com/Redhat-Openshift-GitOps-Workshop/day2configuration-identity-providers
+    targetRevision: main
+  project: default
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+----
+
+When you finish then apply the manifest with the following command:
+
+----
+oc apply -f <YOUR_IDENTITYPROVIDER_APP_FILENAME> -n openshift-gitops
+----
+
+Now check that the application was created
+
+image::day_ip_app.png["Identity Provider App"]
+
+
+You can see the resources we defined in the code and how ArgoCD apply these changes in the cluster. So, now you can logout kubeadmin user and login with the new user "ocpadmin". The password for this user is "ocpadmin"
+
+WARNING: The changes apply to Oauth resources take a time to perform, for that reason it's possible that you can't login with ocpadmin. Please, wait some minutes to try login again.
+
+
+[#managed_application]
+=== Create managed application repository
+
+Right now you now how create ArgoCD applications but create application manually breaks GitOps approach. In order to fix that issue it's neccessary to create a repository where all ArgoCD applications will be defined as code.
+
+You can use https://github.com/Redhat-Openshift-GitOps-Workshop/day2configuration-argocd-applications[this repository], just fork the repository and get url of your just forked repository.
+
+The next step will be create a new ArgoCD application which observe the repository that you just fork. You can create this applications as you wish, created by console or create and apply a manifest.
+
+IMPORTANT: You need configure the ArgoCD application to use "values-dev" as helm values file.
+
+Although it's recommendable create the application by yourself, if you have some troubles to create the application, you can use this manifest:
+
+----
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: day2configuration-argocd-applications
+spec:
+  destination:
+    name: ''
+    namespace: ''
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: .
+    repoURL: >-
+      https://github.com/<YOUR_GITHUB_USER>/day2configuration-argocd-applications
+    targetRevision: main
+    helm:
+      valueFiles:
+        - values-dev.yaml
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+----
+
+Once the application is created, access to ArgoCD console and check all the applications that have been created. You can access to one of them and verify if all resources have been identified and created by ArgoCD.
+
+image::apps_all.png["All ArgoCD apps"]
+
+From now on you add all your ArgoCD apps in these repository and automatically the ArgoCD controller will managed the applications in the cluster
