@@ -118,3 +118,99 @@ Once the application is created, access to ArgoCD console and check all the appl
 image::apps_all.png["All ArgoCD apps"]
 
 From now on you add all your ArgoCD apps in these repository and automatically the ArgoCD controller will managed the applications in the cluster
+
+[#changes]
+=== Install an operator follow GitOps
+
+In this moment we have a GitOps workflow available, so if we need introduce any change, like install an operator for example, we need to define this change in our repository. For show this case we are going to install Redhat Openshift Pipelines.
+
+In order to proceed with the changes needed, you need to fork the operator repository: https://github.com/Redhat-Openshift-GitOps-Workshop/day2configuration-operators. And then add the forked repository in your day2configuration-argocd-applications repository in the parameter "repoUrl" in the file templates/day2configuration-operator.yaml:
+
+----
+...
+  repoURL: >-
+      https://github.com/<YOUR_GITHUB_USER>/day2configuration-operators
+...
+----
+
+In this moment you are ready to make changes and these will be apply in the cluster by ArgoCD, so we are going to add the Redhat Openshift Pipeline operator into our cluster.
+
+Into your day2configuration-operators repository, create a new file (redhat_pipelines.yaml) in the folder base/subscription and add the following fragment code:
+
+----
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: openshift-pipelines
+  namespace: openshift-operators
+spec:
+  channel: latest
+  installPlanApproval: Automatic
+  name: openshift-pipelines-operator-rh
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+  startingCSV: openshift-pipelines-operator-rh.v1.9.0
+----
+
+The code you just add is a subscription manifest which install the operator when is applied in a Openshift cluster.
+
+Hereunder, Pipeline operator required specific permissions in order to perform some actions propertly, so create a new file (tekton_cluster_roles.yaml) into overlays/dev and add the following frament code:
+
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tekton-admin-view
+rules:
+- apiGroups: ["triggers.tekton.dev"]
+  resources: ["clusterinterceptors"]
+  verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: secret-reader
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "watch", "list"]
+----
+
+Finally you need adds these files into the kustomize manifest files to specify that these file must be apply. Just add the names into the resource section in the kustomize files:
+
+- base/kustomization.yaml
+----
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - operatorgroup/elasticsearch.yaml
+  - operatorgroup/logging.yaml
+  - subscription/elasticsearch.yaml
+  - subscription/logging.yaml
+  - subscription/redhat_pipelines.yaml
+----
+- overlays/dev/kustomization.yaml
+----
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+- ../../base
+
+resources:
+- tekton_cluster_roles.yaml
+----
+
+
+Once you are perform all these changes, then commit the changes and push into the repository:
+
+----
+git add .
+git commit -m "Adds Redhat Openshift Pipelines operator"
+git push origin main
+----
+
+Finally check that ArgoCD synchronize the day2configuration-operators app (force the sync to avoid waitings) and verify that the new operator has been installed correctly.
+
+image::pipelines_installation.png["Redhat Openshift Pipelines installed"]
