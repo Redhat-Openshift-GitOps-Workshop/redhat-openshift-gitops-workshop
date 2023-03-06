@@ -6,7 +6,7 @@
     <title>Setup :: Gitops workshop</title>
     <link rel="canonical" href="https://github.com/Redhat-Openshift-GitOps-Workshop/redhat-openshift-gitops-workshop/template-tutorial/01-setup.html">
     <link rel="prev" href="index.html">
-    <link rel="next" href="#02-deploy.adoc">
+    <link rel="next" href="02-day2_gitops.html">
     <meta name="generator" content="Antora 3.0.0">
     <link rel="stylesheet" href="../_/css/site.css">
 <link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
@@ -79,21 +79,12 @@
     <a class="nav-link" href="#prerequisite">Prerequisites</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#minikube">Setup Minikube</a>
+    <a class="nav-link" href="#access">Access to resources</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="#02-deploy.adoc">2. Deploy Service</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#02-deploy.adoc#package">Build Service</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#02-deploy.adoc#deploy">Deploy Dervice</a>
-  </li>
-</ul>
+    <a class="nav-link" href="02-day2_gitops.html">Day 2 GitOps laboratory</a>
   </li>
 </ul>
   </li>
@@ -198,7 +189,7 @@ Please review the official documentation to install the latest versions of these
 </div>
 </div>
 <div class="sect1">
-<h2 id="01-laboratory"><a class="anchor" href="#01-laboratory"></a>Laboratory</h2>
+<h2 id="laboratory"><a class="anchor" href="#laboratory"></a>Laboratory</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The technical exercises included in this tutorial are based on cloud native solutions which are extensively used in the IT market. Please review the following list which includes the basics around these cloud native solutions:</p>
@@ -220,7 +211,7 @@ Please review the official documentation to install the latest versions of these
 </ul>
 </div>
 <div class="sect2">
-<h3 id="01-accessconsole"><a class="anchor" href="#01-accessconsole"></a>Access - OCP Console</h3>
+<h3 id="access"><a class="anchor" href="#access"></a>Access - OCP Console</h3>
 <div class="paragraph">
 <p>In order to check the laboratory environment, please access the Openshift Console via browser using your credentials:</p>
 </div>
@@ -288,7 +279,7 @@ Please pay special attention to <strong>oc CLI</strong> because you will need to
 </div>
 </div>
 <div class="sect1">
-<h2 id="01-clusterSetup"><a class="anchor" href="#01-clusterSetup"></a>Cluster Setup</h2>
+<h2 id="clusterSetup"><a class="anchor" href="#clusterSetup"></a>Cluster Setup</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>ArgoCD is the unique requirement and you can install it as you wish. However we recommend install by Redhat Openshift Gitops operator, although you can install too by ArgoCD operator.</p>
@@ -304,7 +295,7 @@ sh scripts/setup_lab.sh
 ---</p>
 </div>
 <div class="sect2">
-<h3 id="01-accessArgoCD"><a class="anchor" href="#01-accessArgoCD"></a>Access - Argo CD dashboard</h3>
+<h3 id="accessArgoCD"><a class="anchor" href="#accessArgoCD"></a>Access - Argo CD dashboard</h3>
 <div class="paragraph">
 <p>The Argo CD web console will give you access to control how the git repo is synced with Openshift, as well as check the real status of the synchronization. To log in to the web console, access to ArgoCD server host, to get it execute following command:</p>
 </div>
@@ -335,7 +326,7 @@ sh scripts/setup_lab.sh
 </div>
 <nav class="pagination">
   <span class="prev"><a href="index.html" class="query-params-link">Template Tutorial</a></span>
-  <span class="next"><a href="#02-deploy.adoc" class="query-params-link">2. Deploy Service</a></span>
+  <span class="next"><a href="02-day2_gitops.html" class="query-params-link">Day 2 GitOps laboratory</a></span>
 </nav>
 </article>
 <aside class="toc sidebar" data-title="Contents" data-levels="2">

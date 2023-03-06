@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Deploy Service :: Gitops workshop</title>
     <link rel="canonical" href="https://github.com/Redhat-Openshift-GitOps-Workshop/redhat-openshift-gitops-workshop/template-tutorial/02-day2_gitops.html">
+    <link rel="prev" href="01-setup.html">
     <meta name="generator" content="Antora 3.0.0">
     <link rel="stylesheet" href="../_/css/site.css">
 <link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
@@ -77,21 +78,12 @@
     <a class="nav-link" href="01-setup.html#prerequisite">Prerequisites</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="01-setup.html#minikube">Setup Minikube</a>
+    <a class="nav-link" href="01-setup.html#access">Access to resources</a>
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="#02-deploy.adoc">2. Deploy Service</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#02-deploy.adoc#package">Build Service</a>
-  </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#02-deploy.adoc#deploy">Deploy Dervice</a>
-  </li>
-</ul>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="02-day2_gitops.html">Day 2 GitOps laboratory</a>
   </li>
 </ul>
   </li>
@@ -123,7 +115,7 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">Template Tutorial</a></li>
-    <li><a href="02-day2_gitops.html">Deploy Service</a></li>
+    <li><a href="02-day2_gitops.html">Day 2 GitOps laboratory</a></li>
   </ul>
 </nav>
   <div class="edit-this-page"><a href="https://github.com/Redhat-Openshift-GitOps-Workshop/redhat-openshift-gitops-workshop/edit/master/documentation/modules/ROOT/pages/02-day2_gitops.adoc">Edit this Page</a></div>
@@ -313,8 +305,137 @@ spec:
 <p>From now on you add all your ArgoCD apps in these repository and automatically the ArgoCD controller will managed the applications in the cluster</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="changes"><a class="anchor" href="#changes"></a>Install an operator follow GitOps</h3>
+<div class="paragraph">
+<p>In this moment we have a GitOps workflow available, so if we need introduce any change, like install an operator for example, we need to define this change in our repository. For show this case we are going to install Redhat Openshift Pipelines.</p>
+</div>
+<div class="paragraph">
+<p>In order to proceed with the changes needed, you need to fork the operator repository: <a href="https://github.com/Redhat-Openshift-GitOps-Workshop/day2configuration-operators" class="bare">https://github.com/Redhat-Openshift-GitOps-Workshop/day2configuration-operators</a>. And then add the forked repository in your day2configuration-argocd-applications repository in the parameter "repoUrl" in the file templates/day2configuration-operator.yaml:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>...
+  repoURL: &gt;-
+      https://github.com/&lt;YOUR_GITHUB_USER&gt;/day2configuration-operators
+...</pre>
 </div>
 </div>
+<div class="paragraph">
+<p>In this moment you are ready to make changes and these will be apply in the cluster by ArgoCD, so we are going to add the Redhat Openshift Pipeline operator into our cluster.</p>
+</div>
+<div class="paragraph">
+<p>Into your day2configuration-operators repository, create a new file (redhat_pipelines.yaml) in the folder base/subscription and add the following fragment code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: openshift-pipelines
+  namespace: openshift-operators
+spec:
+  channel: latest
+  installPlanApproval: Automatic
+  name: openshift-pipelines-operator-rh
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+  startingCSV: openshift-pipelines-operator-rh.v1.9.0</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The code you just add is a subscription manifest which install the operator when is applied in a Openshift cluster.</p>
+</div>
+<div class="paragraph">
+<p>Hereunder, Pipeline operator required specific permissions in order to perform some actions propertly, so create a new file (tekton_cluster_roles.yaml) into overlays/dev and add the following frament code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tekton-admin-view
+rules:
+- apiGroups: ["triggers.tekton.dev"]
+  resources: ["clusterinterceptors"]
+  verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: secret-reader
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "watch", "list"]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally you need adds these files into the kustomize manifest files to specify that these file must be apply. Just add the names into the resource section in the kustomize files:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>base/kustomization.yaml</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - operatorgroup/elasticsearch.yaml
+  - operatorgroup/logging.yaml
+  - subscription/elasticsearch.yaml
+  - subscription/logging.yaml
+  - subscription/redhat_pipelines.yaml</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>overlays/dev/kustomization.yaml</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+- ../../base
+
+resources:
+- tekton_cluster_roles.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once you are perform all these changes, then commit the changes and push into the repository:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git add .
+git commit -m "Adds Redhat Openshift Pipelines operator"
+git push origin main</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally check that ArgoCD synchronize the day2configuration-operators app (force the sync to avoid waitings) and verify that the new operator has been installed correctly.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/pipelines_installation.png" alt="Redhat Openshift Pipelines installed">
+</div>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="01-setup.html" class="query-params-link">1. Setup</a></span>
+</nav>
 </article>
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
   <div class="toc-menu"></div>
