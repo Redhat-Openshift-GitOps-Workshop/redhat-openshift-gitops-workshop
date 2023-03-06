@@ -12,7 +12,7 @@ NOTE: Please review the official documentation to install the latest versions of
 
 It is also required to have a https://github.com[GitHub] account in order to create some repositories during this tutorial.
 
-[#01-laboratory]
+[#laboratory]
 == Laboratory
 
 The technical exercises included in this tutorial are based on cloud native solutions which are extensively used in the IT market. Please review the following list which includes the basics around these cloud native solutions:
@@ -22,7 +22,7 @@ The technical exercises included in this tutorial are based on cloud native solu
 - https://argoproj.github.io/argo-cd/[ArgoCD] is a declarative, GitOps continuous delivery tool for Kubernetes following the GitOps pattern of using Git repositories as the source of truth for defining the desired application state. Argo CD automates the deployment of the desired application states in the specified target environments. Application deployments can track updates to branches, tags, or pinned to a specific version of manifests at a Git commit.
 - https://helm.sh/[Helm] is a tool to find, share, and use software built for Kubernetes. Helm helps users manage Kubernetes applications in terms of definition, installing, and upgrading even the most complex Kubernetes applications.
 
-[#01-accessconsole]
+[#access]
 === Access - OCP Console
 
 In order to check the laboratory environment, please access the Openshift Console via browser using your credentials:
@@ -55,7 +55,7 @@ image::oc_cli_login.png["OC CLI Login Output"]
 
 TIP: Please pay special attention to *oc CLI* because you will need to use this tool several times during this tutorial.
 
-[#01-clusterSetup]
+[#clusterSetup]
 == Cluster Setup
 
 ArgoCD is the unique requirement and you can install it as you wish. However we recommend install by Redhat Openshift Gitops operator, although you can install too by ArgoCD operator. 
@@ -68,7 +68,7 @@ cd ocp-cluster-setup
 sh scripts/setup_lab.sh
 ---
 
-[#01-accessArgoCD]
+[#accessArgoCD]
 === Access - Argo CD dashboard
  
 The Argo CD web console will give you access to control how the git repo is synced with Openshift, as well as check the real status of the synchronization. To log in to the web console, access to ArgoCD server host, to get it execute following command:
